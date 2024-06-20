@@ -1,0 +1,9 @@
+- Initialize
+    1. npm init -y
+    2. npm install ws
+    3. npm install chess.js
+
+
+- note
+    1. Error in board.moves() : which should return the array of moves, but return incorrect information.
+    
