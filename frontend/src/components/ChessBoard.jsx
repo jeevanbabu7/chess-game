@@ -1,11 +1,10 @@
 import { Box } from '@mui/material'
 import React, { useState } from 'react'
 import { MOVE } from '../pages/Game';
+import './ChessBoard.css'
 
 const calculateCell = (i , j) => {
     let letter = String.fromCharCode(97 + j);
-    // console.log(i, j);
-    // console.log("from",letter + (8 - i));
     return letter + (8 - i);
 }
 
@@ -13,28 +12,14 @@ const ChessBoard = ({color, chess, setBoard, board, socket}) => {
 
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
-    
-  return (
-    <>
-        <Box>
-            {board.map((row, indexi) => {
-                return (
-                    <Box key={indexi} sx={{
-                        display: "flex", 
-                    }}>
-                        {row.map((cell, indexj) => {
-                            return <div key={indexj} style={{
-                                display: 'flex',
-                                width: '4.5rem',
-                                height: '4.5rem',
-                                backgroundColor: (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
-                              
-                            }}
-                            onClick={(event) => {
-                                let square = calculateCell(indexi, indexj); 
+    const [dragging, setDragging] = useState(null); 
+
+    const handleMove = (event, cell, indexi, indexj) => {
+        console.log("kkkkkkk");
+        let square = calculateCell(indexi, indexj); 
 
                                 if(!from) {
-                                    if(cell.color != undefined && color == cell.color)   // cannot move the pices of other color
+                                    if(cell && color == cell.color)   // cannot move the pices of other color
                                         setFrom((prev) => square); 
                                 }
                                 else {
@@ -69,15 +54,65 @@ const ChessBoard = ({color, chess, setBoard, board, socket}) => {
                                     setTo(null);
                                     
                                 }
-                            
-                                
-                               
-                                
-                                
+    }
+    const handleDrag = (e, cell, indexi, indexj) => {
+        const elem = document.getElementById(`(${indexi},${indexj})`)
+        elem.style.backgroundColor = 'none';
+        console.log(elem);
+        handleMove(e, cell, indexi, indexj);
+        
+    }
+    const handleDragStart = (e) => {
+        console.log("dragging", e.target);
+        e.target.style.backgroundColor = 'none';
+        
+    }
+
+
+    
+    const handleDrop = (e,cell, indexi, indexj) => {
+        e.preventDefault();
+        handleMove(e,cell, indexi, indexj);
+    }
+
+    
+  return (
+    <>
+        <Box>
+            {board.map((row, indexi) => {
+                return (
+                    <Box key={indexi} sx={{
+                        display: "flex", 
+                    }}>
+                        {row.map((cell, indexj) => {
+                            return <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
+                                display: 'flex',
+                                width: '4.5rem',
+                                height: '4.5rem',
+                                backgroundColor: (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
+                              
                             }}
+                            onClick={(event) => handleMove(event, cell, indexi, indexj)}
                             >
-                                {/* {cell ? cell.type: ""} */}
-                                {cell && <img  src={`pieces/${cell.type}_${cell.color}.png`}/>}
+
+                                {cell ? <div 
+                                            className='piece' 
+                                            style={{
+                                                background: `url(pieces/${cell.type}_${cell.color}.png) no-repeat center`,
+                                                backgroundColor: 'transparent'    
+                                            }} 
+                                            draggable="true"
+                                            onDragStart={(e) => handleDrag(e, cell, indexi, indexj)}  
+                                            onDragOver={(e) => e.preventDefault()} 
+                                            onDrop={(e) => handleDrop(e,cell, indexi, indexj)}
+                                        ></div> : <div 
+                                                    className='piece' 
+                                                    onClick={(e) => console.log(e.target)} 
+                                                    onDragOver={(e) => e.preventDefault()} 
+                                                    onDrop={(e) => handleDrop(e,cell, indexi, indexj)}
+                                                ></div>}
+
+                                
                             </div>
                         })}
                     </Box>
