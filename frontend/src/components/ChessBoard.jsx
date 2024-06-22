@@ -9,6 +9,13 @@ const calculateCell = (i , j) => {
     return letter + (8 - i);
 }
 
+const EmitMoveSound = (move) => {
+    const type = (move.length > 2) ? "capture": "move";
+    const sound = new Audio(`sounds/${type}.mp3`);
+    sound.play()
+
+}
+
 const ChessBoard = ({moveCount, setMoveCount, color, chess, setBoard, board, socket}) => {
 
     const [from, setFrom] = useState(null);
@@ -45,11 +52,15 @@ const ChessBoard = ({moveCount, setMoveCount, color, chess, setBoard, board, soc
                                             type: MOVE, 
                                             payload: move
                                         }));
+                                        
+                                        
+                                        
                                         setMoveCount(prevCnt => prevCnt + 1);
                                         console.log(chess.ascii());
                                         chess.move(move);
                                         setBoard(chess.board());
-                                        
+                                        EmitMoveSound(chess.history().pop());
+
                                         if(chess.isCheckmate()) {
                                             if(moveCount % 2 == 0) setWinner('b');
                                             else setWinner('w');
