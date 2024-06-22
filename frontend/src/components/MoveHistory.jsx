@@ -23,7 +23,6 @@ const MoveHistory = ({ chess }) => {
             <DataGrid
                 rows={rows}
                 columns={columns}
-                pagination={false} // Disable pagination
                 disableColumnMenu // Disable column menu
                 disableSelectionOnClick // Disable row selection
                 hideFooterPagination

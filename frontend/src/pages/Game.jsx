@@ -30,7 +30,7 @@ const Game = () => {
             console.log("received");
             switch(message.type) {
                 case INIT_GAME:
-                    console.log("Game started.");
+                    console.log("Game started.",message.payload.color);
                     setColor(message.payload.color);
                     setStarted(true);
                     return

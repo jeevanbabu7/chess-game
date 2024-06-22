@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { MOVE } from '../pages/Game';
+import BlackBoard from './BlackBoard';
+import WhiteBoard from './WhiteBoard';
 import './ChessBoard.css';
 import { MoveDown } from '@mui/icons-material';
 
-const calculateCell = (i, j) => {
-    let letter = String.fromCharCode(97 + j);
-    return letter + (8 - i);
+const calculateCell = (i, j, turn) => {
+    console.log(turn);
+    if(turn === 'w') {
+        
+        let letter = String.fromCharCode(97 + j);
+        console.log("white",letter + (8 - i));
+        
+        return letter + (8 - i);
+    }
+    else {
+        let letter = String.fromCharCode(97 + 7 - j);
+        return letter + (i + 1);
+    }
 };
 
 const EmitMoveSound = (move) => {
-    const type = move.length > 2 ? "capture" : "move";
+    console.log(move[1]);
+    const type = move[1] === 'x' ? "capture" : "move";
     const sound = new Audio(`sounds/${type}.mp3`);
     sound.play();
 };
@@ -20,8 +33,8 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
     const [to, setTo] = useState(null);
     const [winner, setWinner] = useState(null);
 
-    const handleMove = (event, cell, indexi, indexj) => {
-        let square = calculateCell(indexi, indexj);
+    const handleMove = (event, cell, indexi, indexj, turn) => {
+        let square = calculateCell(indexi, indexj, turn);
 
         if (!from) {
             if (cell && color === cell.color) {
@@ -71,7 +84,7 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
         elem.style.backgroundColor = 'none';
         elem.style.cursor = 'grabbing';
         console.log(elem);
-        handleMove(e, cell, indexi, indexj);
+        handleMove(e, cell, indexi, indexj, color);
     };
 
     const handleDragStart = (e) => {
@@ -81,57 +94,28 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
 
     const handleDrop = (e, cell, indexi, indexj) => {
         e.preventDefault();
-        handleMove(e, cell, indexi, indexj);
+        handleMove(e, cell, indexi, indexj, color);
     };
+    
 
-    return (
-        <>
-            <Box>
-                {board.map((row, indexi) => (
-                    <Box key={indexi} sx={{ display: "flex" }}>
-                        {row.map((cell, indexj) => {
-                            let lost = winner && cell && cell.type === 'k' && cell.color === winner;
-                            return (
-                                <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
-                                    display: 'flex',
-                                    width: '4.5rem',
-                                    height: '4.5rem',
-                                    backgroundColor: lost ? '#c74936' : (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    transitionDuration: '.5s',
-                                }}
-                                    onClick={(event) => handleMove(event, cell, indexi, indexj)}
-                                >
-                                    {cell ? (
-                                        <img
-                                            className='piece'
-                                            style={{
-                                                height: '3.8rem',
-                                                width: '4rem',
-                                            }}
-                                            src={`pieces/${cell.type}_${cell.color}.png`}
-                                            draggable="true"
-                                            onDragStart={(e) => handleDrag(e, cell, indexi, indexj)}
-                                            onDragOver={(e) => e.preventDefault()}
-                                            onDrop={(e) => handleDrop(e, cell, indexi, indexj)}
-                                        />
-                                    ) : (
-                                        <div
-                                            className='piece'
-                                            onClick={(e) => console.log(e.target)}
-                                            onDragOver={(e) => e.preventDefault()}
-                                            onDrop={(e) => handleDrop(e, cell, indexi, indexj)}
-                                        ></div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </Box>
-                ))}
-            </Box>
-        </>
-    );
+    if(color == 'b') 
+        return <BlackBoard 
+                    chess={chess} 
+                    board={board}
+                    handleMove={handleMove} 
+                    winner={winner}
+                    handleDrag={handleDrag}
+                    handleDrop={handleDrop}
+                />
+
+    return <WhiteBoard     
+                chess={chess} 
+                board={board}
+                handleMove={handleMove} 
+                winner={winner}
+                handleDrag={handleDrag}
+                handleDrop={handleDrop}
+            />
 };
 
 export default ChessBoard;
