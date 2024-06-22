@@ -5,6 +5,9 @@ import ChessBoard from '../components/ChessBoard'
 import useSocket from '../hooks/useSocket'
 import {useSelector} from 'react-redux'
 import  {Chess} from 'chess.js'
+import MoveHistory from '../components/MoveHistory'
+
+
 export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
@@ -81,7 +84,7 @@ const Game = () => {
                     }}
                 >
                     
-                    <Box width={100} sx={{
+                    <Box width={200} sx={{
                         width: '20rem',
                         marginTop: '5rem'
                         
@@ -91,6 +94,9 @@ const Game = () => {
                                 type: INIT_GAME
                             }))
                         }}>Play</Button>}
+
+                        {started && <MoveHistory chess={chess}/>}
+                        
                     </Box>
                 
                 </Grid>
