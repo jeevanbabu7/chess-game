@@ -2,20 +2,21 @@ import { Box } from '@mui/material'
 import React, { useState } from 'react'
 import { MOVE } from '../pages/Game';
 import './ChessBoard.css'
+import { MoveDown } from '@mui/icons-material';
 
 const calculateCell = (i , j) => {
     let letter = String.fromCharCode(97 + j);
     return letter + (8 - i);
 }
 
-const ChessBoard = ({color, chess, setBoard, board, socket}) => {
+const ChessBoard = ({moveCount, setMoveCount, color, chess, setBoard, board, socket}) => {
 
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
     const [dragging, setDragging] = useState(null); 
-
+    const [winner, setWinner] = useState(null);
     const handleMove = (event, cell, indexi, indexj) => {
-        console.log("kkkkkkk");
+        
         let square = calculateCell(indexi, indexj); 
 
                                 if(!from) {
@@ -26,25 +27,33 @@ const ChessBoard = ({color, chess, setBoard, board, socket}) => {
 
                                     setTo((prev) => square);
                                     try {
+                                        let move = {
+                                            from,
+                                            to: square
+                                            
+                                        }
+                                        if(square[1] == '8') {
+                                            move = {
+                                                from,
+                                                to: square,
+                                                promotion: 'q'
+                                                
+                                            }
+                                        }
                                         console.log("sending moves..",from,square);
                                         socket.send(JSON.stringify({
                                             type: MOVE, 
-                                            payload: {
-                                                from,
-                                                to: square
-                                                
-                                            }
+                                            payload: move
                                         }));
-                                        console.log("p1");
+                                        setMoveCount(prevCnt => prevCnt + 1);
                                         console.log(chess.ascii());
-                                        chess.move({
-                                            from, 
-                                            to: square
-                                        });
-                                        
+                                        chess.move(move);
                                         setBoard(chess.board());
-
-                                        console.log("done");
+                                        
+                                        if(chess.isCheckmate()) {
+                                            if(moveCount % 2 == 0) setWinner('b');
+                                            else setWinner('w');
+                                        }
 
                                     }catch(err) {
                                         console.log("Invaid move");
@@ -86,14 +95,16 @@ const ChessBoard = ({color, chess, setBoard, board, socket}) => {
                         display: "flex", 
                     }}>
                         {row.map((cell, indexj) => {
+                            let lost = winner && cell && cell.type == 'k' && cell.color == winner;
                             return <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
                                 display: 'flex',
                                 width: '4.5rem',
                                 height: '4.5rem',
-                                backgroundColor: (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
+                                backgroundColor:  lost ?'#c74936' : (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
                                 display: 'flex',
                                 justifyContent:'center',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                transitionDuration: '.5s'
                               
                             }}
                             onClick={(event) => handleMove(event, cell, indexi, indexj)}
@@ -115,7 +126,7 @@ const ChessBoard = ({color, chess, setBoard, board, socket}) => {
                                                     onClick={(e) => console.log(e.target)} 
                                                     onDragOver={(e) => e.preventDefault()} 
                                                     onDrop={(e) => handleDrop(e,cell, indexi, indexj)}
-                                                ></div>}
+                                            ></div>}
 
                                 
                             </div>

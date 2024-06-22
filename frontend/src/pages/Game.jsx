@@ -16,7 +16,8 @@ const Game = () => {
     const [board, setBoard] = useState(chess.board());
     const [color, setColor] = useState(null);
     const [started, setStarted] = useState(false);
-    const {currentUser} = useSelector(state => state.user)
+    const [moveCount, setMoveCount] = useState(0);
+    const {currentUser} = useSelector(state => state.user);
 
     useEffect(() => {
         console.log(currentUser);
@@ -34,8 +35,9 @@ const Game = () => {
                     console.log("move made");
                     const move = message.payload;
                     console.log(move);
-                    chess.move(move)
-                    setBoard(chess.board())
+                    chess.move(move);
+                    setBoard(chess.board());
+                    setMoveCount(prevCnt => prevCnt + 1);
                     console.log(chess.ascii());
                     return
                 case GAME_OVER:
@@ -63,7 +65,14 @@ const Game = () => {
                         backgroundColor: '#302E2B'
                     }}
                 >
-                    <ChessBoard color={color} setBoard={setBoard} chess={chess} board={board} socket={socket}/>
+                    <ChessBoard 
+                        moveCount={moveCount} 
+                        setMoveCount={setMoveCount}
+                        color={color} 
+                        setBoard={setBoard} 
+                        chess={chess} 
+                        board={board} 
+                        socket={socket}/>
                 </Grid>
 
                 <Grid item xs={12} md={4}className='flex justify-center h-screen'
