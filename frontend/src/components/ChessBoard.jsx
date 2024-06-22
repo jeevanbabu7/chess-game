@@ -58,6 +58,7 @@ const ChessBoard = ({color, chess, setBoard, board, socket}) => {
     const handleDrag = (e, cell, indexi, indexj) => {
         const elem = document.getElementById(`(${indexi},${indexj})`)
         elem.style.backgroundColor = 'none';
+        elem.style.cursor = 'grabbing'
         console.log(elem);
         handleMove(e, cell, indexi, indexj);
         
@@ -90,22 +91,26 @@ const ChessBoard = ({color, chess, setBoard, board, socket}) => {
                                 width: '4.5rem',
                                 height: '4.5rem',
                                 backgroundColor: (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
+                                display: 'flex',
+                                justifyContent:'center',
+                                alignItems: 'center'
                               
                             }}
                             onClick={(event) => handleMove(event, cell, indexi, indexj)}
                             >
 
-                                {cell ? <div 
+                                {cell ? <img 
                                             className='piece' 
                                             style={{
-                                                background: `url(pieces/${cell.type}_${cell.color}.png) no-repeat center`,
-                                                backgroundColor: 'transparent'    
-                                            }} 
+                                                height: '3.8rem',
+                                                width: '4rem'
+                                            }}
+                                            src={`pieces/${cell.type}_${cell.color}.png`} 
                                             draggable="true"
                                             onDragStart={(e) => handleDrag(e, cell, indexi, indexj)}  
                                             onDragOver={(e) => e.preventDefault()} 
                                             onDrop={(e) => handleDrop(e,cell, indexi, indexj)}
-                                        ></div> : <div 
+                                        /> : <div 
                                                     className='piece' 
                                                     onClick={(e) => console.log(e.target)} 
                                                     onDragOver={(e) => e.preventDefault()} 

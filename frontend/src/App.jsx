@@ -3,6 +3,7 @@ import './App.css'
 import { Button } from '@mui/material'
 import Landing from "./pages/Landing"
 import Game from "./pages/Game"
+import Auth from "./pages/Auth"
 function App() {
 
 
@@ -12,7 +13,8 @@ function App() {
       <BrowserRouter>
    
         <Routes>
-          <Route path='/' element={<Landing />}/>
+          <Route path='/' element={<Auth />}/>
+          <Route path='/home' element={<Landing />}/>
           <Route path='/game' element={<Game />}/>
         </Routes>
       </BrowserRouter>

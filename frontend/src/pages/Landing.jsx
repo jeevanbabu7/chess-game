@@ -1,6 +1,5 @@
 import React from 'react'
-import { Button, Grid, colors } from '@mui/material'
-import './landing.css'
+import { Button, Grid, Typography, colors } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 const Landing = () => {
 
@@ -8,17 +7,27 @@ const Landing = () => {
   return (
       <Grid container >
  
-       <Grid className='left-container' item xs={12} md={6}>
-                <img src="./board.png" alt="" className='board-img'/>
+       <Grid  className='flex justify-center mt-10 h-screen' sx={{backgroundColor: "#302E2B"}} item xs={12} md={6}>
+                <img style={{height: "35rem",margin: "auto"}} src="./board.png" alt="" className='w-10'/>
         
         </Grid>
-        <Grid item xs={12} md={6}>
-            <div className="right-container">
-                <p style={{
-                    color: 'whitesmoke',
-                    fontWeight: '700',
-                    fontSize: '3rem'
-                }}>Play chess online</p>
+        <Grid 
+            sx={{
+                backgroundColor: '#302E2B',
+                height: '100vh',
+            }}
+        item xs={12} md={6}>
+            <div style={{
+                display: 'flex',
+                flexDirection: "column",
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '1.6rem',
+                paddingTop: '2rem'
+            }} >
+
+                <Typography variant='h3' color={"white"}sx={{fontWeight: '700'}}>Play chess online</Typography>
+          
   
                 <Button variant='contained' color='success' onClick={
                     () => navigate('/game')
