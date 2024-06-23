@@ -1,12 +1,13 @@
-import { Button, Typography } from '@mui/material'
-// import {GoogleIcon} from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material'
+import GoogleIcon from '@mui/icons-material/Google';
 import React from 'react'
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import app from '../../firebase.js'
-
+import Footer from '../components/Footer.jsx';
+import AnimatedText from '../utils/TextAnimation.jsx';
 const Auth = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -45,15 +46,44 @@ const Auth = () => {
     }
   }
   return (
-    <div>
-      <Button onClick={handleGoogleSubmit}>
-        {/* <GoogleIcon /> */}
-        <Typography>
-          Continue with google
-        </Typography>
-        
-      </Button>
-    </div>
+    
+
+    <Box
+      width='100%'
+      height='100vh'
+      display='flex'
+      flexDirection='column'
+      justifyContent='space-between'
+      sx={{
+        backgroundColor: '#262522'
+      }}
+    >
+      <Box 
+        width='100%'
+        display='flex'
+        flexDirection='column'
+        justifyContent='space-between'
+        alignItems={'center'}
+        gap='1.6rem'
+        sx={{
+          backgroundColor: '#262522'
+        }}
+      >
+        <Box 
+          sx={{marginTop: '5rem'}}
+        >
+          <AnimatedText />
+        </Box>
+        <Button variant='contained' color='success'  onClick={handleGoogleSubmit} sx={{width: "20rem"}}>
+          <GoogleIcon sx={{marginRight: '1rem'}}/>
+          <Typography>
+            Continue with google
+          </Typography>
+          
+        </Button>
+      </Box>
+        <Footer />
+    </Box>
   )
 }
 

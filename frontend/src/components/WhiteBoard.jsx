@@ -1,9 +1,10 @@
+
 import { Box } from '@mui/material';
 import React, { useState } from 'react'
 
 const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) => {
 
- 
+    
     return (
         <Box>
             {board.map((row, indexi) => (
@@ -16,12 +17,12 @@ const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) 
                                 display: 'flex',
                                 width: '4.5rem',
                                 height: '4.5rem',
-                                backgroundColor: lost ? '#c74936' : (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
+                                backgroundColor: lost || (chess.inCheck() && cell && cell.type == 'k' && cell.color == 'w') ? '#c74936' : (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 transitionDuration: '.5s',
                             }}
-                                onClick={(event) => handleMove(event, cell, indexi, indexj, 'b')}
+                                onClick={(event) => handleMove(event, cell, indexi, indexj, 'w')}
                             >
                                 {cell ? (
                                     <img

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Grid, Typography, colors } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import Footer from '../components/Footer'
 const Landing = () => {
 
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ const Landing = () => {
  
        <Grid  className='flex justify-center mt-10 h-screen' sx={{backgroundColor: "#302E2B"}} item xs={12} md={6}>
                 <img style={{height: "35rem",margin: "auto"}} src="./board.png" alt="" className='w-10'/>
-        
+               
         </Grid>
         <Grid 
             sx={{

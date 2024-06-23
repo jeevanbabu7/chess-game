@@ -6,11 +6,14 @@ import useSocket from '../hooks/useSocket'
 import {useSelector} from 'react-redux'
 import  {Chess} from 'chess.js'
 import MoveHistory from '../components/MoveHistory'
-
-
+import { EmitMoveSound } from '../utils/SoundEmitters.js'
+import { EmitSound } from '../utils/SoundEmitters.js'
 export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
+
+
+
 
 const Game = () => {
    
@@ -35,12 +38,14 @@ const Game = () => {
                     setColor(message.payload.color);
                     setStarted(true);
                     setGameId(message.payload.gameId);
+                    EmitSound('game-start')
                     return
                 case MOVE:
                     console.log("move made");
                     const move = message.payload;
                     console.log(move);
                     chess.move(move);
+                    EmitMoveSound(chess);
                     setBoard(chess.board());
                     setMoveCount(prevCnt => prevCnt + 1);
                     console.log(chess.ascii());
@@ -69,7 +74,23 @@ const Game = () => {
                         alignItems: 'center',
                         backgroundColor: '#302E2B'
                     }}
-                >
+                >   
+                    {started && <Box display='flex' flexDirection='column' justifyContent='space-between' 
+                        sx={{height: '75vh', marginRight: "1rem"}}    
+                    >
+                    
+                        <Box display='flex' flexDirection="column" justifyContent='center' gap='.5rem'>
+                            <img src='profile.png' style={{width: "80px"}} alt="Image"/>
+                            <Typography color='white' sx={{fontWeight: 500}}>Opponent</Typography>
+                        </Box>
+                        <Box display='flex' flexDirection="column" justifyContent='center' gap='.5rem'>
+                            <img src='profile.png' style={{width: "80px"}} alt="Image"/>
+                            <Typography color='white' sx={{fontWeight: 500}}>{currentUser.username}</Typography>
+                        </Box>
+                        
+                    </Box>}
+
+
                     <ChessBoard 
                         moveCount={moveCount} 
                         setMoveCount={setMoveCount}

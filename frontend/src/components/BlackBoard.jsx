@@ -23,7 +23,7 @@ const BlackBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) 
                             }}
                                 onClick={(event) => {
                                     console.log();
-                                    handleMove(event, cell, indexi, indexj, 'w')}}
+                                    handleMove(event, cell, indexi, indexj, 'b')}}
                             >
                                 {cell ? (
                                     <img
