@@ -6,6 +6,8 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import authRouter from './routes/user.route.js'
+import gameRouter from './routes/game.route.js'
+import { errorHandler } from './utils/error-handler.js';
 
 dotenv.config(); 
 console.log(process.env.DB_STR);
@@ -14,6 +16,7 @@ const app = express()
 app.use(cors()) 
 app.use(cookieParser())
 app.use(express.json())
+app.use(errorHandler)
 
 
 mongoose.connect(process.env.DB_STR, {
@@ -31,8 +34,12 @@ app.listen(port, () => {
     console.log("Server listening on port 5000");
 });
 
-app.use('/api/auth',authRouter)
+// Routes-----------------------------------------------------------------------------
 
+app.use('/api/auth',authRouter)
+app.use('/api/game', gameRouter)
+
+// --------------------------------------------------------------------------------------
 
 const wss = new WebSocketServer({ port: 8000 });
 const gameManager = new GameManager();

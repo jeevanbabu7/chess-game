@@ -10,7 +10,7 @@ const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) 
                 <Box key={indexi} sx={{ display: "flex" }}>
                     {row.map((cell, indexj) => {
                         // console.log(indexi,indexj);
-                        let lost = winner && cell && cell.type === 'k' && cell.color === winner;
+                        let lost = winner && cell && cell.type === 'k' && cell.color !== winner;
                         return (
                             <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
                                 display: 'flex',

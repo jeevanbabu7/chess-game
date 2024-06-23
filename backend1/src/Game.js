@@ -1,26 +1,53 @@
 import { Chess } from 'chess.js';
+import GameData from '../models/game.models.js';
 import { GAME_OVER, INIT_GAME, MOVE } from './Messages.js';
 
+const createGameInDB = async (player1Id, player2Id) => {
+
+    try {
+
+        console.log(player1Id);
+        console.log(player2Id );
+        const newGame = new GameData({
+            player1: player1Id, 
+            player2: player2Id
+        }) 
+
+        await newGame.save();
+
+        return newGame._id;
+
+    }catch(err) {
+        console.log(err);
+    }
+
+}
+
 export default class Game {
-    constructor(player1, player2) {
+    constructor(player1, player2, player1Id, player2Id) {
         this.player1 = player1;
         this.player2 = player2;
+        this.gameId = createGameInDB(player1Id, player2Id);
         this.board = new Chess();
         this.startTime = new Date();
         this.moveCount = 0;
+
 
         // Send initial game setup messages to players
         this.player1.send(JSON.stringify({
             type: INIT_GAME,
             payload: {
-                color: 'w'
+                color: 'w',
+                gameId: this.gameId
+                
             }
         }));
 
         this.player2.send(JSON.stringify({
             type: INIT_GAME,
             payload: {
-                color: 'b'
+                color: 'b',
+                gameId: this.gameId
             }
         }));
     }

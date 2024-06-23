@@ -5,7 +5,7 @@ const MoveSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    playerID: {
+    playerId: {
         type: String,
         required: true
     },
@@ -17,3 +17,5 @@ const MoveSchema = new mongoose.Schema({
 },{timestamps: true})
 
 const Move = mongoose.model('Move', MoveSchema);
+
+export default  Move;

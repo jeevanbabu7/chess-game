@@ -14,12 +14,12 @@ const MoveHistory = ({ chess }) => {
 
     const columns = [
         { field: 'id', headerName: 'No', width: 90 },
-        { field: 'white', headerName: 'White', width: 100, editable: false },
-        { field: 'black', headerName: 'Black', width: 100, editable: false },
+        { field: 'white', headerName: 'White', width: 120, editable: false },
+        { field: 'black', headerName: 'Black', width: 120, editable: false },
     ];
 
     return (
-        <div style={{ height: 400, width: '100%', backgroundColor: 'white',overflow: 'hidden' }}>
+        <div style={{ height: 400, width: '100%',overflow: 'hidden'}}>
             <DataGrid
                 rows={rows}
                 columns={columns}
@@ -28,6 +28,30 @@ const MoveHistory = ({ chess }) => {
                 hideFooterPagination
                 hideFooterSelectedRowCount
                 hideFooter
+                sx={{
+                    '& .MuiDataGrid-columnHeader': {
+                        backgroundColor: "#302E2B",
+                        color: "white",
+                        fontWeight: 700,
+                        border: "1px solid #1A1A18",
+                    },
+                    '& .MuiDataGrid-cell': {
+                        border: "1px solid #1A1A18",
+                    
+                    },
+                    "& .MuiDataGrid-row": {
+                        border: "1px solid #1A1A18",
+                        borderRadius: "5px",
+                     
+                        width: "calc(100% - 2px)",
+                
+                        },
+                    '.MuiDataGrid-columnSeparator': {
+                            display: 'none',
+                        },
+                    color: "white"
+                }}
+               
             />
         </div>
     );

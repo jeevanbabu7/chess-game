@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import './Game.css'
-import { Box, Button, ButtonBase, Grid, styled } from '@mui/material'
+import { Box, Button, ButtonBase, Grid, Typography, styled } from '@mui/material'
 import ChessBoard from '../components/ChessBoard'
 import useSocket from '../hooks/useSocket'
 import {useSelector} from 'react-redux'
@@ -13,7 +13,7 @@ export const MOVE = "move";
 export const GAME_OVER = "game_over";
 
 const Game = () => {
-
+   
     const socket = useSocket();
     const [chess, setChess] = useState(new Chess());
     const [board, setBoard] = useState(chess.board());
@@ -23,7 +23,8 @@ const Game = () => {
     const {currentUser} = useSelector(state => state.user);
 
     useEffect(() => {
-        console.log(currentUser);
+        // console.log(currentUser._id);
+        console.log("socket", socket);
         if(!socket) return;
         socket.onmessage = (e) =>{
             const message = JSON.parse(e.data);
@@ -86,14 +87,32 @@ const Game = () => {
                     
                     <Box width={200} sx={{
                         width: '20rem',
-                        marginTop: '5rem'
+                        marginTop: '5rem',
                         
-                    }}>
-                        {!started && <Button variant='contained' color='success' fullWidth onClick={() => {
+                        
+                    }} display="flex" flexDirection="column" gap="1rem">
+                        {!started && 
+                        <Button variant='contained' color='success' sx={{height: "3rem"}} fullWidth onClick={() => {
                             socket.send(JSON.stringify({
-                                type: INIT_GAME
+                                type: INIT_GAME,
+                                id: currentUser._id
                             }))
-                        }}>Play</Button>}
+                        }}>
+                            <Typography sx={{
+                                fontWeight: 600
+                            }}>
+                                Rapid (10 + 0)
+                            </Typography>
+                        </Button>}
+
+                        {!started && 
+                        <Button variant='contained' sx={{height: "3rem"}} color='success' fullWidth >
+                            <Typography sx={{
+                                fontWeight: 600
+                            }}>
+                                Blitz (5 + 0)
+                            </Typography>
+                        </Button>}
 
                         {started && <MoveHistory chess={chess}/>}
                         

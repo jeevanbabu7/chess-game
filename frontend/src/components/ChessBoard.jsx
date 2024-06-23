@@ -21,9 +21,11 @@ const calculateCell = (i, j, turn) => {
     }
 };
 
-const EmitMoveSound = (move) => {
-    console.log(move[1]);
+const EmitMoveSound = (chess) => {
+    const move = chess.history().pop();
     const type = move[1] === 'x' ? "capture" : "move";
+    if(chess.isCheckmate()) type = "mate";
+    console.log(type);
     const sound = new Audio(`sounds/${type}.mp3`);
     sound.play();
 };
@@ -48,7 +50,7 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
                     from,
                     to: square,
                 };
-                if (square[1] === '8') {
+                if (square[1] === '8' || square[1] === '1') {
                     move = {
                         from,
                         to: square,
@@ -65,7 +67,7 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
                 console.log(chess.ascii());
                 chess.move(move);
                 setBoard(chess.board());
-                EmitMoveSound(chess.history().pop());
+                EmitMoveSound(chess);
 
                 if (chess.isCheckmate()) {
                     if (moveCount % 2 === 0) setWinner('b');

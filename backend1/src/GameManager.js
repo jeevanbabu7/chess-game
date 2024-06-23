@@ -6,6 +6,7 @@ class GameManager {
         this.games = [];
         this.users = [];
         this.pendingUser = null;
+        this.pendingUserId = null;
     }
 
     addUser(socket) {
@@ -20,14 +21,16 @@ class GameManager {
     addHandler(socket) {
         socket.on('message', (data) => {
             const message = JSON.parse(data.toString());
-
+            // console.log("messge", message);
             if (message.type === INIT_GAME) {
                 if (this.pendingUser) {
-                    const game = new Game(socket, this.pendingUser);
+                    const game = new Game(socket, this.pendingUser,message.id, this.pendingUserId);
                     this.games.push(game);
                     this.pendingUser = null;
+                    this.pendingUserId = null;
                 } else {
                     this.pendingUser = socket;
+                    this.pendingUserId = message.id;
                 }
             }
 

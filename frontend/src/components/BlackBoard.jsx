@@ -10,7 +10,7 @@ const BlackBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) 
                 return(
                 <Box key={indexi} sx={{ display: "flex" }}>
                     {newRow.reverse().map((cell, indexj) => {
-                        let lost = winner && cell && cell.type === 'k' && cell.color === winner;
+                        let lost = winner && cell && cell.type === 'k' && cell.color !== winner;
                         return (
                             <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
                                 display: 'flex',

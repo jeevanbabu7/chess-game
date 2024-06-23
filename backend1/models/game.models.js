@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Game from "../src/Game";
 
 const GameSchema = new mongoose.Schema({
     player1: {
@@ -11,10 +10,14 @@ const GameSchema = new mongoose.Schema({
         required: true
     },
     status: {
-        type: String, 
+        type: String,  // game over or playing 
+    },
+    timeControl: {
+        type: Number,
+        default: 600
     }
 },{timestamps: true})
 
-const Game = new mongoose.model('Game', GameSchema);
+const GameData = new mongoose.model('GameData', GameSchema);
 
-export default Game;
+export default GameData;
