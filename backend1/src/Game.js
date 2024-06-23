@@ -3,60 +3,65 @@ import GameData from '../models/game.models.js';
 import { GAME_OVER, INIT_GAME, MOVE } from './Messages.js';
 
 const createGameInDB = async (player1Id, player2Id) => {
-
     try {
-
-        console.log(player1Id);
-        console.log(player2Id );
         const newGame = new GameData({
             player1: player1Id, 
             player2: player2Id
-        }) 
+        });
 
         await newGame.save();
 
         return newGame._id;
-
-    }catch(err) {
+    } catch (err) {
         console.log(err);
+        throw err; // Optionally rethrow the error to handle it elsewhere
     }
-
 }
 
 export default class Game {
     constructor(player1, player2, player1Id, player2Id) {
         this.player1 = player1;
         this.player2 = player2;
-        this.gameId = createGameInDB(player1Id, player2Id);
+        this.player1Id = player1Id;
+        this.player2Id = player2Id;
         this.board = new Chess();
         this.startTime = new Date();
         this.moveCount = 0;
 
+        // Call an async function within the constructor
+        (async () => {
+            try {
+                this.gameId = await createGameInDB(player1Id, player2Id);
+            
 
-        // Send initial game setup messages to players
-        this.player1.send(JSON.stringify({
-            type: INIT_GAME,
-            payload: {
-                color: 'w',
-                gameId: this.gameId
-                
-            }
-        }));
+                // Send initial game setup messages to players
+                this.player1.send(JSON.stringify({
+                    type: INIT_GAME,
+                    payload: {
+                        color: 'w',
+                        gameId: this.gameId
+                    }
+                }));
 
-        this.player2.send(JSON.stringify({
-            type: INIT_GAME,
-            payload: {
-                color: 'b',
-                gameId: this.gameId
+                this.player2.send(JSON.stringify({
+                    type: INIT_GAME,
+                    payload: {
+                        color: 'b',
+                        gameId: this.gameId
+                    }
+                }));
+            } catch (err) {
+                console.error('Error creating game in DB:', err);
+                // Handle error appropriately, perhaps by notifying players or logging
             }
-        }));
+        })();
+
     }
-
+    
     makeMove(socket, move) {
         // Ensure the move is made by the correct player's turn
         if (this.moveCount % 2 === 0 && socket !== this.player1) return;
         if (this.moveCount % 2 === 1 && socket !== this.player2) return;
-
 
         try {
             // Attempt to make the move on the chess board

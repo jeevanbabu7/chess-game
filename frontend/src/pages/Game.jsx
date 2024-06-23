@@ -20,11 +20,11 @@ const Game = () => {
     const [color, setColor] = useState(null);
     const [started, setStarted] = useState(false);
     const [moveCount, setMoveCount] = useState(0);
+    const [gameId, setGameId] = useState(null);
     const {currentUser} = useSelector(state => state.user);
 
     useEffect(() => {
-        // console.log(currentUser._id);
-        console.log("socket", socket);
+        
         if(!socket) return;
         socket.onmessage = (e) =>{
             const message = JSON.parse(e.data);
@@ -34,6 +34,7 @@ const Game = () => {
                     console.log("Game started.",message.payload.color);
                     setColor(message.payload.color);
                     setStarted(true);
+                    setGameId(message.payload.gameId);
                     return
                 case MOVE:
                     console.log("move made");
@@ -76,7 +77,9 @@ const Game = () => {
                         setBoard={setBoard} 
                         chess={chess} 
                         board={board} 
-                        socket={socket}/>
+                        socket={socket}
+                        gameId={gameId}
+                    />
                 </Grid>
 
                 <Grid item xs={12} md={4}className='flex justify-center h-screen'

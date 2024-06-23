@@ -10,7 +10,8 @@ const GameSchema = new mongoose.Schema({
         required: true
     },
     status: {
-        type: String,  // game over or playing 
+        type: String,  // game over or playing
+       
     },
     timeControl: {
         type: Number,

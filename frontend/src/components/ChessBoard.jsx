@@ -5,6 +5,7 @@ import BlackBoard from './BlackBoard';
 import WhiteBoard from './WhiteBoard';
 import './ChessBoard.css';
 import { MoveDown } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 
 const calculateCell = (i, j, turn) => {
     console.log(turn);
@@ -30,11 +31,36 @@ const EmitMoveSound = (chess) => {
     sound.play();
 };
 
-const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, socket }) => {
+
+const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, socket, gameId}) => {
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
     const [winner, setWinner] = useState(null);
+    const {currentUser} = useSelector(state => state.user);
+    const updateMoves = async (move, gameId) => {
+        console.log("gameId", gameId);
+        try {
 
+            const res = await fetch('http://localhost:5000/api/game/move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Corrected header key
+                },
+                body: JSON.stringify({
+                    gameId,
+                    playerId: currentUser._id,
+                    move
+                })
+            });
+            
+    
+            const data = res.json()
+            console.log(data);
+    
+        }catch(err) {
+            console.log(err.message);
+        }
+    }
     const handleMove = (event, cell, indexi, indexj, turn) => {
         let square = calculateCell(indexi, indexj, turn);
 
@@ -57,12 +83,14 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
                         promotion: 'q',
                     };
                 }
+
                 console.log("sending moves..", from, square);
                 socket.send(JSON.stringify({
                     type: MOVE,
                     payload: move,
                 }));
 
+                updateMoves(square, gameId);
                 setMoveCount(prevCnt => prevCnt + 1);
                 console.log(chess.ascii());
                 chess.move(move);

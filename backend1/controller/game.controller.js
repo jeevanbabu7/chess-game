@@ -4,6 +4,7 @@ import { errorHandler } from "../utils/error-handler.js";
 export const makeMove = async(req, res, next) => {
     try {
         const {playerId, gameId, move} = req.body;
+        console.log(req.body);
         const newMove = new Move({
             playerId,
             gameId,
