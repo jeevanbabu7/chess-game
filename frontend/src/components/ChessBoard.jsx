@@ -4,8 +4,9 @@ import { MOVE } from '../pages/Game';
 import BlackBoard from './BlackBoard';
 import WhiteBoard from './WhiteBoard';
 import './ChessBoard.css';
-import { MoveDown } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
+import { EmitMoveSound,EmitSound } from '../utils/SoundEmitters.js';
+
 
 const calculateCell = (i, j, turn) => {
     console.log(turn);
@@ -22,20 +23,11 @@ const calculateCell = (i, j, turn) => {
     }
 };
 
-const EmitMoveSound = (chess) => {
-    const move = chess.history().pop();
-    const type = move[1] === 'x' ? "capture" : "move";
-    if(chess.isCheckmate()) type = "mate";
-    console.log(type);
-    const sound = new Audio(`sounds/${type}.mp3`);
-    sound.play();
-};
 
 
-const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, socket, gameId}) => {
+const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, socket, gameId, winner,setWinner, turn, setTurn, inCheck, setInCheck}) => {
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
-    const [winner, setWinner] = useState(null);
     const {currentUser} = useSelector(state => state.user);
     const updateMoves = async (move, gameId) => {
         console.log("gameId", gameId);
@@ -76,20 +68,17 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
                     from,
                     to: square,
                 };
-                if (square[1] === '8' || square[1] === '1') {
-                    move = {
-                        from,
-                        to: square,
-                        promotion: 'q',
-                    };
-                }
+                let piece = chess.get(from); // find the piece at the starting to check if it is pawn for promotion
+
+                if ((square[1] === '8' || square[1] === '1') && cell && piece.type === 'p') 
+                    move.promotion = 'q';
 
                 console.log("sending moves..", from, square);
                 socket.send(JSON.stringify({
                     type: MOVE,
                     payload: move,
                 }));
-
+             
                 updateMoves(square, gameId);
                 setMoveCount(prevCnt => prevCnt + 1);
                 console.log(chess.ascii());
@@ -97,10 +86,22 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
                 setBoard(chess.board());
                 EmitMoveSound(chess);
 
+                setTurn(turn => {
+                    return (turn == 'w') ? 'b' : 'w';
+                })
+
                 if (chess.isCheckmate()) {
                     if (moveCount % 2 === 0) setWinner('b');
                     else setWinner('w');
+                    console.log("CheckMate");
                 }
+
+                if(chess.inCheck()) {
+                    if(moveCount % 2 == 1) setInCheck('b');
+                    else setInCheck('w');
+                    EmitSound('check');
+                }else setInCheck(null);
+
             } catch (err) {
                 console.log("Invalid move");
             }
@@ -130,21 +131,24 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
 
     if(color == 'b') 
         return <BlackBoard 
-                    chess={chess} 
                     board={board}
                     handleMove={handleMove} 
                     winner={winner}
                     handleDrag={handleDrag}
                     handleDrop={handleDrop}
+                    inCheck={inCheck}
+
                 />
 
     return <WhiteBoard     
-                chess={chess} 
+
                 board={board}
                 handleMove={handleMove} 
                 winner={winner}
                 handleDrag={handleDrag}
                 handleDrop={handleDrop}
+                inCheck={inCheck}
+
             />
 };
 

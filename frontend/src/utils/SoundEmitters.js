@@ -1,6 +1,6 @@
 export const EmitMoveSound = (chess) => {
     const move = chess.history().pop();
-    const type = move[1] === 'x' ? "capture" : "move";
+    let type = move[1] === 'x' ? "capture" : "move";
     if(chess.isCheckmate()) type = "mate";
     console.log(type);
     const sound = new Audio(`sounds/${type}.mp3`);

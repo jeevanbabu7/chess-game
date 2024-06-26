@@ -4,6 +4,8 @@ import { GAME_OVER, INIT_GAME, MOVE } from './Messages.js';
 
 const createGameInDB = async (player1Id, player2Id) => {
     try {
+        console.log(player1Id);
+        console.log(player2Id);
         const newGame = new GameData({
             player1: player1Id, 
             player2: player2Id

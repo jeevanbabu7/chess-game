@@ -28,6 +28,7 @@ const MoveHistory = ({ chess }) => {
                 hideFooterPagination
                 hideFooterSelectedRowCount
                 hideFooter
+                
                 sx={{
                     '& .MuiDataGrid-columnHeader': {
                         backgroundColor: "#302E2B",
@@ -37,20 +38,21 @@ const MoveHistory = ({ chess }) => {
                     },
                     '& .MuiDataGrid-cell': {
                         border: "1px solid #1A1A18",
-                    
                     },
                     "& .MuiDataGrid-row": {
                         border: "1px solid #1A1A18",
                         borderRadius: "5px",
-                     
                         width: "calc(100% - 2px)",
-                
-                        },
+                    },
                     '.MuiDataGrid-columnSeparator': {
-                            display: 'none',
-                        },
-                    color: "white"
+                        display: 'none',
+                    },
+                    '& .MuiDataGrid-row:nth-child(even)': {
+                        backgroundColor: '#302E2B',
+                    },
+                    color: "white" // If you want to set a default color for text, place it outside the specific class selectors.
                 }}
+                
                
             />
         </div>

@@ -1,8 +1,10 @@
 import { Box } from '@mui/material';
 import React, { useState } from 'react'
 
-const BlackBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) => {
+const BlackBoard = ({handleMove, handleDrag, handleDrop, winner, board, inCheck}) => {
     const newBoard = board.slice();
+    console.log(inCheck);
+    
     return (
         <Box>
             {newBoard.reverse().map((row, indexi) => {
@@ -10,13 +12,14 @@ const BlackBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) 
                 return(
                 <Box key={indexi} sx={{ display: "flex" }}>
                     {newRow.reverse().map((cell, indexj) => {
-                        let lost = winner && cell && cell.type === 'k' && cell.color !== winner;
+                        let checkMate = winner && cell && cell.type == 'k' && cell.color !== winner;
+                        let incheck = cell && inCheck === cell.color && cell.type == 'k';
                         return (
                             <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
                                 display: 'flex',
                                 width: '4.5rem',
                                 height: '4.5rem',
-                                backgroundColor: lost ? '#c74936' : (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
+                                backgroundColor: (checkMate || (incheck))? 'red': (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 transitionDuration: '.5s',

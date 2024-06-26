@@ -2,9 +2,11 @@ import React from 'react'
 import { Button, Grid, Typography, colors } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
+import { useSelector } from 'react-redux'
 const Landing = () => {
 
     const navigate = useNavigate();
+    const {currentUser} = useSelector(state => state.user)
   return (
       <Grid container >
  
@@ -31,7 +33,10 @@ const Landing = () => {
           
   
                 <Button variant='contained' color='success' onClick={
-                    () => navigate('/game')
+                    () => {
+                        if(currentUser) navigate('/game');
+                        else navigate('/')
+                    }
                 }>Play online</Button>
                 <Button variant='text' sx={{
                     backgroundColor: '#2B2827',

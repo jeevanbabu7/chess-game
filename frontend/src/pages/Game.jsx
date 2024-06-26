@@ -1,67 +1,127 @@
-import React, { useEffect, useState } from 'react'
-import './Game.css'
-import { Box, Button, ButtonBase, Grid, Typography, styled } from '@mui/material'
-import ChessBoard from '../components/ChessBoard'
-import useSocket from '../hooks/useSocket'
-import {useSelector} from 'react-redux'
-import  {Chess} from 'chess.js'
-import MoveHistory from '../components/MoveHistory'
-import { EmitMoveSound } from '../utils/SoundEmitters.js'
-import { EmitSound } from '../utils/SoundEmitters.js'
+import React, { useEffect, useState } from 'react';
+import './Game.css';
+import { Box, Button, Grid, Typography } from '@mui/material';
+import ChessBoard from '../components/ChessBoard';
+import Timer from '../components/Timer';
+import useSocket from '../hooks/useSocket';
+import { useSelector } from 'react-redux';
+import { Chess } from 'chess.js';
+import MoveHistory from '../components/MoveHistory';
+import { EmitMoveSound, EmitSound } from '../utils/SoundEmitters';
 export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
-
-
-
-
 const Game = () => {
-   
     const socket = useSocket();
     const [chess, setChess] = useState(new Chess());
     const [board, setBoard] = useState(chess.board());
     const [color, setColor] = useState(null);
     const [started, setStarted] = useState(false);
+    const [winner, setWinner] = useState(null);
     const [moveCount, setMoveCount] = useState(0);
     const [gameId, setGameId] = useState(null);
-    const {currentUser} = useSelector(state => state.user);
+    const { currentUser } = useSelector(state => state.user);
+    const [opponent, setOpponent] = useState(null);
+    const [yourTime, setYourTime] = useState(0);
+    const [opponentTime, setOpponentTime] = useState(0);
+    const [turn, setTurn] = useState('w'); // 'w' for white, 'b' for black
+    const [inCheck, setInCheck] = useState(null);
+
+    let yourIntervalID, opponentIntervalId;
+   
+
+    const clearBoard = () => {
+        chess.reset();
+        setBoard(chess.board());
+        setStarted(true);
+        setWinner(false);
+    };
 
     useEffect(() => {
-        
-        if(!socket) return;
-        socket.onmessage = (e) =>{
+        if (!socket) return;
+
+        socket.onmessage = (e) => {
             const message = JSON.parse(e.data);
-            console.log("received");
-            switch(message.type) {
+            switch (message.type) {
                 case INIT_GAME:
-                    console.log("Game started.",message.payload.color);
+                    clearBoard();
                     setColor(message.payload.color);
-                    setStarted(true);
                     setGameId(message.payload.gameId);
-                    EmitSound('game-start')
-                    return
+                    EmitSound('game-start');
+                    return;
                 case MOVE:
-                    console.log("move made");
                     const move = message.payload;
-                    console.log(move);
                     chess.move(move);
                     EmitMoveSound(chess);
                     setBoard(chess.board());
                     setMoveCount(prevCnt => prevCnt + 1);
-                    console.log(chess.ascii());
-                    return
+                    setTurn(chess.turn());
+                    if(chess.inCheck()) {
+                        setInCheck(() => (moveCount % 2) ? 'b': 'w')
+                        EmitSound("check");
+                    }else setInCheck(null);
+                    return;
                 case GAME_OVER:
-                    console.log("Game over");
                     setStarted(false);
-                    return
-
-                
+                    return;
+                default:
+                    return;
             }
-        }
+        };
 
-    },[socket]);
+        return () => {
+            socket.onmessage = null; // Clean up socket listener
+        };
+    }, [socket]);
 
-    if(!socket) return <div><h1>Connecting....</h1></div>
+    useEffect(() => {
+        
+    
+        const handleTurnChange = () => {
+            if (color && turn === color && started) {
+                clearInterval(opponentIntervalId);
+                yourIntervalID = setInterval(() => {
+                    setYourTime(prevTime => {
+                        if (prevTime > 0) {
+                            return prevTime - 1;
+                        } else {
+                            // If your time is zero, stop both timers
+                            setWinner(prev => (color == 'w') ? 'b': 'w');
+                            clearInterval(yourIntervalID);
+                            clearInterval(opponentIntervalId);
+                            return prevTime;
+                        }
+                    });
+                }, 1000);
+            } else if (color && started) {
+                clearInterval(yourIntervalID);
+                opponentIntervalId = setInterval(() => {
+                    setOpponentTime(prevTime => {
+                        if (prevTime > 0) {
+                            return prevTime - 1;
+                        } else {
+                            // If opponent's time is zero, stop both timers
+                            clearInterval(yourIntervalID);
+                            clearInterval(opponentIntervalId);
+                            setWinner(color);
+                            return prevTime;
+                        }
+                    });
+                }, 1000);
+            }
+        };
+    
+        handleTurnChange();
+    
+        return () => {
+            clearInterval(yourIntervalID);
+            clearInterval(opponentIntervalId);
+        };
+    }, [color, turn, started]);
+    
+
+    if (!socket) return <div><h1>Connecting....</h1></div>;
+
     
     return (
         <>
@@ -76,16 +136,18 @@ const Game = () => {
                     }}
                 >   
                     {started && <Box display='flex' flexDirection='column' justifyContent='space-between' 
-                        sx={{height: '75vh', marginRight: "1rem"}}    
+                        sx={{height: '90vh', marginRight: "1rem"}}    
                     >
                     
                         <Box display='flex' flexDirection="column" justifyContent='center' gap='.5rem'>
+                            <Timer time={opponentTime} /> 
                             <img src='profile.png' style={{width: "80px"}} alt="Image"/>
                             <Typography color='white' sx={{fontWeight: 500}}>Opponent</Typography>
                         </Box>
                         <Box display='flex' flexDirection="column" justifyContent='center' gap='.5rem'>
                             <img src='profile.png' style={{width: "80px"}} alt="Image"/>
                             <Typography color='white' sx={{fontWeight: 500}}>{currentUser.username}</Typography>
+                            <Timer time={yourTime}/> 
                         </Box>
                         
                     </Box>}
@@ -100,6 +162,13 @@ const Game = () => {
                         board={board} 
                         socket={socket}
                         gameId={gameId}
+                        winner={winner}
+                        yourTime={yourTime}
+                        opponentTime={opponentTime}
+                        turn={turn}
+                        setTurn={setTurn}
+                        inCheck={inCheck}
+                        setInCheck={setInCheck}
                     />
                 </Grid>
 
@@ -117,10 +186,14 @@ const Game = () => {
                     }} display="flex" flexDirection="column" gap="1rem">
                         {!started && 
                         <Button variant='contained' color='success' sx={{height: "3rem"}} fullWidth onClick={() => {
+                            setYourTime(600);
+                            setOpponentTime(600);
                             socket.send(JSON.stringify({
                                 type: INIT_GAME,
                                 id: currentUser._id
                             }))
+                            
+                            // setChess(new Chess())
                         }}>
                             <Typography sx={{
                                 fontWeight: 600
@@ -130,7 +203,15 @@ const Game = () => {
                         </Button>}
 
                         {!started && 
-                        <Button variant='contained' sx={{height: "3rem"}} color='success' fullWidth >
+                        <Button variant='contained' sx={{height: "3rem"}} color='success' fullWidth onClick={() => {
+                            setYourTime(300);
+                            setOpponentTime(300);
+                            socket.send(JSON.stringify({
+                                type: INIT_GAME,
+                                id: currentUser._id
+                            }))
+                            
+                        }}>
                             <Typography sx={{
                                 fontWeight: 600
                             }}>
@@ -138,7 +219,7 @@ const Game = () => {
                             </Typography>
                         </Button>}
 
-                        {started && <MoveHistory chess={chess}/>}
+                        {chess.history().length  && <MoveHistory chess={chess}/>}
                         
                     </Box>
                 

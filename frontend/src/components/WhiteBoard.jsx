@@ -2,22 +2,21 @@
 import { Box } from '@mui/material';
 import React, { useState } from 'react'
 
-const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board}) => {
-
-    
+const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board, inCheck}) => {
+    console.log(inCheck);
     return (
         <Box>
             {board.map((row, indexi) => (
                 <Box key={indexi} sx={{ display: "flex" }}>
                     {row.map((cell, indexj) => {
-                        // console.log(indexi,indexj);
-                        let lost = winner && cell && cell.type === 'k' && cell.color !== winner;
+                        let checkMate = winner && chess && cell && cell.type == 'k' && cell.color !== winner;
+                        let check =inCheck &&  cell && inCheck === cell.color && cell.type == 'k';
                         return (
                             <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
                                 display: 'flex',
                                 width: '4.5rem',
                                 height: '4.5rem',
-                                backgroundColor: lost || (chess.inCheck() && cell && cell.type == 'k' && cell.color == 'w') ? '#c74936' : (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
+                                backgroundColor: (checkMate || check) ? 'red': (indexi + indexj) % 2 === 0 ? '#EEEED2' : '#769656',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 transitionDuration: '.5s',
