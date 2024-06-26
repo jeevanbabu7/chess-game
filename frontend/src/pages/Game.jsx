@@ -29,6 +29,15 @@ const Game = () => {
 
     let yourIntervalID, opponentIntervalId;
    
+    const handleResign = (event) => {
+        setWinner(prev => (color == 'w') ? 'b': 'w');
+        socket.send(JSON.stringify({
+            type: GAME_OVER, 
+            status: `${color} resigned`
+        }));
+        clearInterval(yourIntervalID);
+        clearInterval(opponentIntervalId);
+    }
 
     const clearBoard = () => {
         chess.reset();
@@ -62,7 +71,11 @@ const Game = () => {
                     }else setInCheck(null);
                     return;
                 case GAME_OVER:
-                    setStarted(false);
+                    // setStarted(false);
+                    console.log("Game over", message.status);
+                    setWinner( prev => message.status[0] == 'w' ? 'b': 'w' );
+                    clearInterval(yourIntervalID);
+                    clearInterval(opponentIntervalId);
                     return;
                 default:
                     return;
@@ -82,7 +95,7 @@ const Game = () => {
                 clearInterval(opponentIntervalId);
                 yourIntervalID = setInterval(() => {
                     setYourTime(prevTime => {
-                        if (prevTime > 0) {
+                        if (prevTime > 0 && !winner ) {
                             return prevTime - 1;
                         } else {
                             // If your time is zero, stop both timers
@@ -97,7 +110,7 @@ const Game = () => {
                 clearInterval(yourIntervalID);
                 opponentIntervalId = setInterval(() => {
                     setOpponentTime(prevTime => {
-                        if (prevTime > 0) {
+                        if (prevTime > 0 && !winner) {
                             return prevTime - 1;
                         } else {
                             // If opponent's time is zero, stop both timers
@@ -220,6 +233,24 @@ const Game = () => {
                         </Button>}
 
                         {chess.history().length  && <MoveHistory chess={chess}/>}
+                        <Box
+                            
+                        >
+                            <Button 
+                                sx={{backgroundColor: '#769656',
+                                '&:hover': {
+                                    backgroundColor: "#1B5E20"
+                                },
+                                width: "100%"
+                                }} 
+                                variant='contained'
+                                onClick={handleResign}
+                            >
+                                <Typography variant='h6'>
+                                    Resign
+                                </Typography>
+                            </Button>
+                        </Box>
                         
                     </Box>
                 

@@ -1,5 +1,5 @@
 import Game from "./Game.js";
-import { INIT_GAME, MOVE } from "./Messages.js";
+import { GAME_OVER, INIT_GAME, MOVE } from "./Messages.js";
 
 class GameManager {
     constructor() {
@@ -21,7 +21,7 @@ class GameManager {
     addHandler(socket) {
         socket.on('message', (data) => {
             const message = JSON.parse(data.toString());
-            // console.log("messge", message);
+            console.log("messge", message);
             if (message.type === INIT_GAME) {
                 if (this.pendingUser) {
                     const game = new Game(socket, this.pendingUser,message.id, this.pendingUserId);
@@ -43,6 +43,23 @@ class GameManager {
                     game.makeMove(socket, message.payload);
                     
                 }
+            }
+ 
+            if(message.type === GAME_OVER) {
+                const game = this.games.find(game =>
+                    (game.player1 === socket || game.player2 === socket)    
+                );
+
+                game.player1.send(JSON.stringify({
+                    type: GAME_OVER,
+                    status: message.status
+                }))
+                game.player2.send(JSON.stringify({
+                    type: GAME_OVER,
+                    status: message.status
+                }))
+
+                this.games = this.games.filter(item => item != game);
             }
         });
     }

@@ -56,7 +56,7 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
     const handleMove = (event, cell, indexi, indexj, turn) => {
         let square = calculateCell(indexi, indexj, turn);
 
-        if (!from) {
+        if (!from && !winner) {
             if (cell && color === cell.color) {
                 // cannot move the pieces of other color
                 setFrom((prev) => square);

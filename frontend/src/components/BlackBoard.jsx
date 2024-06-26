@@ -3,8 +3,6 @@ import React, { useState } from 'react'
 
 const BlackBoard = ({handleMove, handleDrag, handleDrop, winner, board, inCheck}) => {
     const newBoard = board.slice();
-    console.log(inCheck);
-    
     return (
         <Box>
             {newBoard.reverse().map((row, indexi) => {

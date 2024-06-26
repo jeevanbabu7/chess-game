@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import React, { useState } from 'react'
 
 const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board, inCheck}) => {
-    console.log(inCheck);
+
     return (
         <Box>
             {board.map((row, indexi) => (
