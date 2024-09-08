@@ -1,11 +1,10 @@
 import { Chess } from 'chess.js';
 import GameData from '../models/game.models.js';
-import { GAME_OVER, INIT_GAME, MOVE } from './Messages.js';
+import { GAME_OVER, INIT_GAME, MOVE, RECONNECT } from './Messages.js';
 
 const createGameInDB = async (player1Id, player2Id) => {
     try {
-        console.log(player1Id);
-        console.log(player2Id);
+
         const newGame = new GameData({
             player1: player1Id, 
             player2: player2Id
@@ -91,7 +90,8 @@ export default class Game {
         // Check if the game is over
         if (this.board.isGameOver()) {
             // Determine the winner based on the current turn color
-            const winner = this.board.turn() === 'w' ? 'Black' : 'White';
+            const winner = this.board.turn() === 'w' ? 'black' : 'white';
+            console.log("Game over");
 
             // Notify both players about the game over
             this.player1.send(JSON.stringify({
@@ -122,5 +122,25 @@ export default class Game {
         // else {
         //     // Send reminders or manage time incrementally
         // }
+    }
+
+    reconnect(socket, playerId) {
+        if (playerId === this.player1Id) {
+            this.player1 = socket;
+        } else if (playerId === this.player2Id) {
+            this.player2 = socket;
+        }
+
+        // Notify the reconnected player about the current game state
+        console.log("Reconnecting player", playerId);
+        
+        socket.send(JSON.stringify({
+            type: RECONNECT,
+            payload: {
+                color: this.player1 === socket ? 'w' : 'b',
+                gameId: this.gameId
+            }
+        }));
+
     }
 }

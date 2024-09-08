@@ -9,7 +9,7 @@ const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board, i
             {board.map((row, indexi) => (
                 <Box key={indexi} sx={{ display: "flex" }}>
                     {row.map((cell, indexj) => {
-                        let checkMate = winner && chess && cell && cell.type == 'k' && cell.color !== winner;
+                        let checkMate = winner && cell && cell.type == 'k' && cell.color !== winner;
                         let check =inCheck &&  cell && inCheck === cell.color && cell.type == 'k';
                         return (
                             <div key={`(${indexi},${indexj})`} id={`(${indexi},${indexj})`} style={{
@@ -21,21 +21,25 @@ const WhiteBoard = ({chess, handleMove, handleDrag, handleDrop, winner, board, i
                                 alignItems: 'center',
                                 transitionDuration: '.5s',
                             }}
-                                onClick={(event) => handleMove(event, cell, indexi, indexj, 'w')}
+                            onClick={(event) => handleMove(event, cell, indexi, indexj, 'w')}
                             >
                                 {cell ? (
-                                    <img
-                                        className='piece'
-                                        style={{
-                                            height: '3.8rem',
-                                            width: '4rem',
-                                        }}
-                                        src={`pieces/${cell.type}_${cell.color}.png`}
+                                    <div className='piece-wrapper' style={{width: '100%', height: '100%', backgroundColor: "transparent"}}
                                         draggable="true"
                                         onDragStart={(e) => handleDrag(e, cell, indexi, indexj)}
                                         onDragOver={(e) => e.preventDefault()}
                                         onDrop={(e) => handleDrop(e, cell, indexi, indexj, 'w')}
-                                    />
+                                    >
+                                        <img
+                                            className='piece'
+                                            style={{
+                                                height: '3.8rem',
+                                                width: '4rem',
+                                            }}
+                                            src={`pieces/${cell.type}_${cell.color}.png`}
+                                            
+                                        />
+                                    </div>
                                 ) : (
                                     <div
                                         className='piece'

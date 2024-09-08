@@ -11,6 +11,8 @@ import { EmitMoveSound, EmitSound } from '../utils/SoundEmitters';
 export const INIT_GAME = "init_game";
 export const MOVE = "move";
 export const GAME_OVER = "game_over";
+const RECONNECT = "reconnect";
+
 const Game = () => {
     const socket = useSocket();
     const [chess, setChess] = useState(new Chess());
@@ -46,12 +48,71 @@ const Game = () => {
         setWinner(false);
     };
 
+    
+
+
+    function regenerateBoard() {
+            
+        console.log("uuuuuuuuuuu", gameId);
+        
+        fetch('http://localhost:5000/api/game/getMoves', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                gameId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const moves = data.moves;
+            const timeElasped = new Date() - new Date(data.gameStartTime);
+            setChess(new Chess());
+            setYourTime(600 - Math.floor(timeElasped / 1000));
+            setOpponentTime(600 - Math.floor(timeElasped / 1000));
+            console.log(timeElasped);
+            
+            // if(Math.floor(timeElasped / 1000) > 600) {
+            //     setWinner(() => (color == 'w') ? 'b': 'w');
+            //     console.log("mmmm");
+            //     return;
+            // }
+
+            setTurn(() => {
+                return moves.length % 2 ? 'b': 'w';
+            });
+            setMoveCount(moves.length);
+            console.log(moves);
+            moves.forEach(move => {
+                console.log(move);
+                chess.move(move);
+                console.log(chess.ascii());
+                
+            });
+            setBoard(chess.board());
+        })
+        
+    }
+
     useEffect(() => {
         if (!socket) return;
-
+        const playerId = currentUser._id;
         socket.onmessage = (e) => {
             const message = JSON.parse(e.data);
+            console.log(message);
+            
             switch (message.type) {
+                case RECONNECT:
+                    setGameId(message.payload.gameId);
+                    setStarted(true);
+                    setWinner(false);
+                    console.log("color ", message.payload.color);
+                    if(gameId) {
+                        regenerateBoard();
+                    }
+                    setColor(message.payload.color);
+                    return;
                 case INIT_GAME:
                     clearBoard();
                     setColor(message.payload.color);
@@ -71,9 +132,8 @@ const Game = () => {
                     }else setInCheck(null);
                     return;
                 case GAME_OVER:
-                    // setStarted(false);
-                    console.log("Game over", message.status);
-                    setWinner( prev => message.status[0] == 'w' ? 'b': 'w' );
+                    setStarted(false);
+                    setWinner( prev => message.payload.winner[0] == 'w' ? 'b': 'w' );
                     clearInterval(yourIntervalID);
                     clearInterval(opponentIntervalId);
                     return;
@@ -82,14 +142,21 @@ const Game = () => {
             }
         };
 
+        socket.send(JSON.stringify({
+            type: RECONNECT,
+            id: currentUser._id,
+            payload: {
+                playerId
+            }
+        }));
+
+        
         return () => {
-            socket.onmessage = null; // Clean up socket listener
+            socket.onmessage = null; 
         };
-    }, [socket]);
+    }, [socket, gameId]);
 
     useEffect(() => {
-        
-    
         const handleTurnChange = () => {
             if (color && turn === color && started) {
                 clearInterval(opponentIntervalId);
@@ -132,6 +199,9 @@ const Game = () => {
         };
     }, [color, turn, started]);
     
+    useEffect(() => {
+
+    }, [gameId]);
 
     if (!socket) return <div><h1>Connecting....</h1></div>;
 

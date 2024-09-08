@@ -1,5 +1,5 @@
 import Game from "./Game.js";
-import { GAME_OVER, INIT_GAME, MOVE } from "./Messages.js";
+import { GAME_OVER, INIT_GAME, MOVE, RECONNECT } from "./Messages.js";
 
 class GameManager {
     constructor() {
@@ -21,7 +21,7 @@ class GameManager {
     addHandler(socket) {
         socket.on('message', (data) => {
             const message = JSON.parse(data.toString());
-            console.log("messge", message);
+           
             if (message.type === INIT_GAME) {
                 if (this.pendingUser) {
                     const game = new Game(socket, this.pendingUser,message.id, this.pendingUserId);
@@ -60,6 +60,23 @@ class GameManager {
                 }))
 
                 this.games = this.games.filter(item => item != game);
+            }
+
+            if(message.type === RECONNECT) {
+                console.log("hiiiiiiii");
+                const playerId = message.payload.playerId;
+                console.log("ID", playerId);
+                
+                const game = this.games.find(game =>
+                    (game.player1Id === playerId || game.player2Id === playerId)    
+                );
+                if(game) {
+                    console.log("game found");
+                    game.reconnect(socket, message.payload.playerId);
+                }else {
+                    console.log("no game found");
+                    
+                }
             }
         });
     }

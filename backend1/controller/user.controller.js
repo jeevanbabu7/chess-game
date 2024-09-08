@@ -11,7 +11,7 @@ export const  google = async (req,res) => {
       // 2. else authenticate
       
       if(user) { // User already present cases
-        console.log("log");
+
              const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
         
             const { password: pass, ...rest } = user._doc;
@@ -23,15 +23,15 @@ export const  google = async (req,res) => {
    
           const randomPassword = Math.random().toString(36).slice(-8)
           const hashedPassword = bcryptjs.hashSync(randomPassword,10);
-          console.log("p1");
+    
           const newUser = new User({
             username: req.body.username.split(' ').join('').toLowerCase()+Math.random().toString(36).slice(-4),
             email: req.body.email,
             password:hashedPassword
           })
-          console.log("p2");
+   
           await newUser.save();
-          console.log("p3");
+        
           const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
           const { password: pass, ...rest } = newUser._doc;
           res

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { MOVE } from '../pages/Game';
 import BlackBoard from './BlackBoard';
@@ -29,8 +29,13 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
     const {currentUser} = useSelector(state => state.user);
+    
+    
     const updateMoves = async (move, gameId) => {
         console.log("gameId", gameId);
+        console.log("move", chess.history()[chess.history().length - 1]);
+       
+        
         try {
 
             const res = await fetch('http://localhost:5000/api/game/move', {
@@ -41,7 +46,7 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
                 body: JSON.stringify({
                     gameId,
                     playerId: currentUser._id,
-                    move
+                    move: chess.history()[chess.history().length - 1]
                 })
             });
             
@@ -55,7 +60,9 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
     }
     const handleMove = (event, cell, indexi, indexj, turn) => {
         let square = calculateCell(indexi, indexj, turn);
-
+        console.log(chess.ascii());
+        console.log(from, winner);
+        
         if (!from && !winner) {
             if (cell && color === cell.color) {
                 // cannot move the pieces of other color
@@ -78,11 +85,10 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
                     type: MOVE,
                     payload: move,
                 }));
-             
-                updateMoves(square, gameId);
+                chess.move(move);
                 setMoveCount(prevCnt => prevCnt + 1);
                 console.log(chess.ascii());
-                chess.move(move);
+                updateMoves(square, gameId);
                 setBoard(chess.board());
                 EmitMoveSound(chess);
 

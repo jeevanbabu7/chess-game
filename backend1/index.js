@@ -10,9 +10,10 @@ import gameRouter from './routes/game.route.js'
 import { errorHandler } from './utils/error-handler.js';
 
 dotenv.config(); 
-console.log(process.env.DB_STR);
+
 const port = 5000;
 const app = express()
+
 app.use(cors()) 
 app.use(cookieParser())
 app.use(express.json())
