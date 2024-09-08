@@ -31,7 +31,7 @@ To run this project locally, follow these steps:
 	3. Install the dependencies for both frontend and backend:
 		cd client
 		npm install
-		cd ../server
+		cd ../backend1
 		npm install
 	4. Set up environment variables:
 		- Create a `.env` file in the `server` directory.
