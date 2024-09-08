@@ -55,13 +55,13 @@ To run this project locally, follow these steps:
 
 # Future improvements
 
-**AI Opponent**: Implement an AI for players to compete against when no other online players are available.
-**Spectator Mode**: Allow users to watch live games between other players.
+**AI Opponent**: Implement an AI for players to compete against when no other online players are available.<br>
+**Spectator Mode**: Allow users to watch live games between other players.<br>
 **Game Analysis & Free Review**:
 
 -   Introduce a **game review** feature similar to Chess.com, allowing players to analyze their games after completion.
 -   Show the best, good, and blunder moves for each turn, and provide suggestions for improvement.
 -   Include a move-by-move analysis, showing potential winning strategies and key turning points.
--   Offer the **review feature for free**, letting players improve their chess skills by reviewing their gameplay without needing a subscription.
+-   Offer the **review feature for free**, letting players improve their chess skills by reviewing their gameplay without needing a subscription.<br>
 
 <strong> Sharable Game Links</strong>:  Allow players to generate a link that they can send to friends to invite them to join and play a game directly.
