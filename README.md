@@ -49,7 +49,7 @@ To run this project locally, follow these steps:
 
 
 ### Backend architecture
-![web Socket server architecture](webScoketServer.png "San Juan Mountains")
+![web Socket server architecture](webSocketServer.png)
 
 
 
