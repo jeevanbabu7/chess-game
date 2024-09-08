@@ -19,7 +19,8 @@ A web-based multiplayer chess game built with React and JavaScript, using MongoD
 
 ## Installation
 To run this project locally, follow these steps:
-	0. Install vite
+	
+ 	0. Install vite
 		npm install vite
 	1. Clone the repository:
 		https://github.com/jeevanbabu7/chess-game.git
