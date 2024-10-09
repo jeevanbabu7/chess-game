@@ -4,7 +4,7 @@ import React from 'react'
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../redux/user/userSlice.js';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import app from '../../firebase.js'
 import Footer from '../components/Footer.jsx';
 import AnimatedText from '../utils/TextAnimation.jsx';
@@ -23,7 +23,7 @@ const Auth = () => {
       const result = await signInWithPopup(auth, provider);
 
       // Send user data to backend
-      const res = await fetch('http://localhost:5000/api/auth/google', {
+      const res = await fetch('chess-game-six-kohl.vercel.app/api/auth/google', {
         method: 'POST',
         headers: {
           "Content-Type": 'application/json',

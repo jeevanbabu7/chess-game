@@ -55,7 +55,7 @@ const Game = () => {
             
         console.log("uuuuuuuuuuu", gameId);
         
-        fetch('http://localhost:5000/api/game/getMoves', {
+        fetch('chess-game-six-kohl.vercel.app/api/game/getMoves', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

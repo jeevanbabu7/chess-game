@@ -38,7 +38,7 @@ const ChessBoard = ({ moveCount, setMoveCount, color, chess, setBoard, board, so
         
         try {
 
-            const res = await fetch('http://localhost:5000/api/game/move', {
+            const res = await fetch('chess-game-six-kohl.vercel.app/api/game/move', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Corrected header key
